@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+    <beans xmlns="http://www.springframework.org/schema/beans"  
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+            xmlns:aop="http://www.springframework.org/schema/aop"  
+            xmlns:p="http://www.springframework.org/schema/p"  
+            xmlns:tx="http://www.springframework.org/schema/tx"  
+            xmlns:context="http://www.springframework.org/schema/context"  
+            xsi:schemaLocation="   
+                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd   
+                http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd   
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd 
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">  
+        <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
+            <import resource="classpath:redis-context.xml" />
+        
+        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+		    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+		    <property name="url" value="${jdbc.url}"/>
+		    <property name="username" value="${jdbc.username}"/>
+		    <property name="password" value="${jdbc.password}"/>
+	        <!-- 初始化连接大小 -->
+	        <property name="initialSize" value="${jdbc.initialSize}"></property>
+	        <!-- 连接池最大数量 -->
+	        <property name="maxActive" value="${jdbc.maxActive}"></property>
+	     <!--    连接池最大空闲 -->
+	        <property name="maxIdle" value="${jdbc.maxIdle}"></property>
+	   <!--      连接池最小空闲 -->
+	        <property name="minIdle" value="${jdbc.minIdle}"></property>
+	      <!--   获取连接最大等待时间,毫秒 -->
+	        <property name="maxWait" value="${jdbc.maxWait}"></property>
+	 	</bean> 
+        <!-- sqlSessionFactoryBean -->
+        <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">  
+            <property name="dataSource" ref="dataSource" />  
+            <property name="configLocation" value="classpath:mybatis-config.xml" />  
+       </bean> 
+       
+        <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
+            <property name="basePackage" value="com.ql.web1.dao" />  
+        </bean>
+        
+       
+        
+        <!-- 事务 -->
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+            <property name="dataSource" ref="dataSource" />  
+        </bean> 
+        <tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="show*" read-only="true"/>
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="*" read-only="true" propagation="REQUIRED"/> 
+			</tx:attributes>
+		</tx:advice>
+	
+		<aop:config>
+			<aop:pointcut expression="execution(public * com.ql.web1.service.*.*(..))" id="pointcut"/>
+			<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+		</aop:config>
+		
+		
+		
+		
+		
+		 <!-- properties config   -->  
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+      <property name="order" value="1"/>  
+      <property name="ignoreUnresolvablePlaceholders" value="true"/>  
+      <property name="locations">  
+        <list> 
+            <value>classpath:memcached.properties</value>  
+        </list>  
+      </property>  
+    </bean>  
+
+    <!-- Memcached配置 -->  
+    <bean id="memcachedPool" class="com.whalin.MemCached.SockIOPool" 
+        factory-method="getInstance" init-method="initialize" destroy-method="shutDown">  
+        <property name="servers">  
+            <list>  
+                <value>${memcached.server}:${memcached.port}</value>  
+            </list>  
+        </property>  
+        <property name="initConn">  
+            <value>${memcached.initConn}</value>  
+        </property>  
+        <property name="minConn">  
+            <value>${memcached.minConn}</value>  
+        </property>  
+        <property name="maxConn">  
+            <value>${memcached.maxConn}</value>  
+        </property>  
+        <property name="maintSleep">  
+            <value>${memcached.maintSleep}</value>  
+        </property>  
+        <property name="nagle">  
+            <value>${memcached.nagle}</value>  
+        </property>  
+        <property name="socketTO">  
+            <value>${memcached.socketTO}</value>  
+        </property>  
+    </bean>  
+		    <!-- Spring中引入其他配置文件 -->
+
+   </beans>  

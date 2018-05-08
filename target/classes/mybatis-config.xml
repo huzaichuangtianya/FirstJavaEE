@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "mybatis-3-config.dtd" >
+<configuration>
+
+	 <settings>  
+            <setting name="cacheEnabled" value="false" />  
+     </settings>
+     
+	<typeAliases>
+		<package name="com.ql.web1.entity"/>
+	</typeAliases>
+<!--    <typeHandlers> -->
+<!--       <typeHandler handler="com.RubyWeb.util.OracleClobTypeHandler"/> -->
+<!--   	</typeHandlers> -->
+
+
+<!-- <settings>   -->
+<!--         打开延迟加载 的开关   -->
+<!--         <setting name="lazyLoadingEnabled" value="true"/>   -->
+<!--         将积极加载改为消极加载即按需要加载   -->
+<!--         <setting name="aggressiveLazyLoading" value="false"/>   -->
+<!--         开启二级缓存  默认也是开启的   -->
+<!--         <setting name="cacheEnabled" value="true"/>   -->
+<!--     </settings>   -->
+</configuration>

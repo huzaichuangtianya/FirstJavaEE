@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"mybatis-3-mapper.dtd">
+<mapper namespace="com.ql.web1.dao.users.UserMapper">
+<!-- <cache/> -->
+ <cache type="com.ql.web1.util.RedisCache"/>
+<!-- <cache type="org.mybatis.caches.ehcache.PerpetualCache"></cache> -->
+<insert id="saveUser" parameterType="User" >
+insert into user(id,name) values(#{id},#{name});
+</insert>
+
+<select id="getUser" resultType="User" parameterType="int">
+ select * from user u where u.id=#{id};
+</select>
+
+<update id="updateUser" parameterType="User">
+ update user set name=#{name} where id=#{id};
+</update>
+
+<delete id="deleteUser" parameterType="int">
+  delete from user where id=#{id};
+</delete>
+</mapper>
